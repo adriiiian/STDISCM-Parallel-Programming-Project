@@ -89,6 +89,8 @@ if __name__=="__main__":
     #Getting all files that has the extensions .jpg .png .gif in the source folder and storing it in the list
     for files in list_directory:
         image_files.extend(glob.glob(files))
+
+    print(image_files)
         
     produce = append_image(len(image_files), queue, image_files)
     produce.start()
