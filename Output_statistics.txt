@@ -1,3 +1,9 @@
+Number of Processes: 5
+Maximum Enhancing Time (in seconds): 60
+Brightness Enhancment: 1.20
+Sharpness Enhancement: 1.20
+Contrast Enhancement: 1.20
+
 Total Images Processed: 60
 Output Folder Location: ../destination/
-Total time: 22
+End time (in seconds): 21

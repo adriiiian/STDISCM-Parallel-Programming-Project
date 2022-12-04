@@ -2,7 +2,7 @@ import os, sys
 import glob
 from PIL import Image
 from PIL import ImageEnhance
-import time, random, multiprocessing
+import time, multiprocessing
 
 class append_image(multiprocessing.Process):
     def __init__(self, count, queue, image_files):
@@ -29,9 +29,11 @@ class process_class(multiprocessing.Process):
         self.sharpness = sharpness
         self.contrast = contrast
         self.enhance_time = time.perf_counter() + (enhancing_minutes * 60)
+        self.enhance_time_minutes = enhancing_minutes * 60
         self.output_directory = output_directory
         self.semaphore = semaphore
         self.img_counter = img_counter
+        self.num_process = num_process
 
     def run(self):
         start_time = time.perf_counter()
@@ -94,7 +96,10 @@ class process_class(multiprocessing.Process):
         end_time = time.perf_counter()
         total_time = end_time - start_time
         txt_file = open("Output_statistics.txt", "w+")
-        txt_file.write("Total Images Processed: %d\r\nOutput Folder Location: ../" % int(self.img_counter.value) + self.output_directory + "\nTotal time: %d" %int(total_time))
+        txt_file.write("Number of Processes: %d\n" % int(self.num_process) + "Maximum Enhancing Time (in seconds): %d\n" % int(self.enhance_time_minutes) + 
+                        "Brightness Enhancment: %.2f\n" % float(self.brightness) + "Sharpness Enhancement: %.2f\n" % float(self.sharpness) +
+                        "Contrast Enhancement: %.2f\n\n" % float(self.contrast) + "Total Images Processed: %d\r\nOutput Folder Location: ../" % int(self.img_counter.value) +
+                        self.output_directory + "\nEnd time (in seconds): %d" %int(total_time))
         txt_file.close()
 
 if __name__=="__main__":
