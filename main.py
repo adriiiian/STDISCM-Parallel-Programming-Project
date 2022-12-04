@@ -28,18 +28,20 @@ class process_class(multiprocessing.Process):
         self.brightness = brightness
         self.sharpness = sharpness
         self.contrast = contrast
-        self.enhance_time = time.perf_counter() + enhancing_minutes * 60
+        self.enhance_time = time.perf_counter() + (enhancing_minutes * 60)
         self.output_directory = output_directory
         self.semaphore = semaphore
         self.img_counter = img_counter
 
     def run(self):
         start_time = time.perf_counter()
+        curr_time = start_time
         end_time = 0
         for i in range(self.counter):
             # If start time is greater than the enhance time in minutes, stop the loop
-            if(start_time > self.enhance_time):
-                print("Timeout\nProcess: %d" % self.ID + " finished processing")
+            curr_time = time.perf_counter()
+            if(curr_time > self.enhance_time):
+                print("Process: %d" % self.ID + " finished processing due to timeout")
                 break
 
             else:
@@ -59,14 +61,14 @@ class process_class(multiprocessing.Process):
                     image_new = []
                     for frame in range(image_enhanced.n_frames):
                         image_enhanced.seek(frame)
-                        new_frame = Image.new('RGBA', image_enhanced.size)
+                        new_frame = Image.new('RGB', image_enhanced.size)
                         new_frame.paste(image_enhanced)
 
-                        brightness_img = ImageEnhance.Brightness(new_frame.convert('RGBA'))
+                        brightness_img = ImageEnhance.Brightness(new_frame.convert('RGB'))
                         new_frame = brightness_img.enhance(self.brightness)
-                        sharpness_img = ImageEnhance.Sharpness(image_enhanced.convert('RGBA'))
+                        sharpness_img = ImageEnhance.Sharpness(new_frame.convert('RGB'))
                         new_frame = sharpness_img.enhance(self.sharpness)
-                        contrast_img = ImageEnhance.Contrast(image_enhanced.convert('RGBA'))
+                        contrast_img = ImageEnhance.Contrast(new_frame.convert('RGB'))
                         new_frame = contrast_img.enhance(self.contrast)
                         image_new.append(new_frame)
 
@@ -93,6 +95,7 @@ class process_class(multiprocessing.Process):
         total_time = end_time - start_time
         txt_file = open("Output_statistics.txt", "w+")
         txt_file.write("Total Images Processed: %d\r\nOutput Folder Location: ../" % int(self.img_counter.value) + self.output_directory)
+        txt_file.close()
 
 if __name__=="__main__":
 
@@ -107,9 +110,20 @@ if __name__=="__main__":
     input_directory = input("Enter the folder of input directory: ")
 
     output_directory = input("Enter the folder of output directory: ")
+    if(os.path.exists(output_directory) == False):  # Checks if directory is existing, if not create the directory
+        os.mkdir(output_directory)
     output_directory = f"{output_directory}{'/'}"
 
-    enhancing_minutes = int(input("Enter the enhancing time in minutes: "))
+    while True:
+        enhancing_minutes = input("Enter the enhancing time in minutes: ")
+        try:
+            enhancing_minutes = int(enhancing_minutes)
+            if(enhancing_minutes <= 0):
+                print("Positive numbers only, try again")
+                continue
+            break
+        except ValueError:
+            print("Positive numbers only, try again")
 
     brightness = float(input("Enter the brightness enhancement factor: "))
 
