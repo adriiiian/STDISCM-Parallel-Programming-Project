@@ -1,2 +1,3 @@
 Total Images Processed: 60
 Output Folder Location: ../destination/
+Total time: 22

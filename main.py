@@ -94,7 +94,7 @@ class process_class(multiprocessing.Process):
         end_time = time.perf_counter()
         total_time = end_time - start_time
         txt_file = open("Output_statistics.txt", "w+")
-        txt_file.write("Total Images Processed: %d\r\nOutput Folder Location: ../" % int(self.img_counter.value) + self.output_directory)
+        txt_file.write("Total Images Processed: %d\r\nOutput Folder Location: ../" % int(self.img_counter.value) + self.output_directory + "\nTotal time: %d" %int(total_time))
         txt_file.close()
 
 if __name__=="__main__":
@@ -103,7 +103,7 @@ if __name__=="__main__":
     process_list = []
 
     manager = multiprocessing.Manager()
-    num_image_processed = manager.Value('counter', 0)
+    img_counter = manager.Value('counter', 0)
 
     resource_lock = multiprocessing.Semaphore(1)
 
@@ -150,7 +150,7 @@ if __name__=="__main__":
     produce.start()
 
     for i in range(int(num_process)):
-        process = process_class(len(image_files), i, queue, num_image_processed, resource_lock)
+        process = process_class(len(image_files), i, queue, img_counter, resource_lock)
         process_list.append(process)
         process.start()
 
