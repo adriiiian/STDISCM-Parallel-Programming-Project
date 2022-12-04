@@ -1,0 +1,2 @@
+Total Images Processed: 12
+Output Folder Location: ../destination/
